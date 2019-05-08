@@ -7,16 +7,12 @@
 <link rel="stylesheet" type="text/css" href="css/style.css" />
 <title>Tetris HTML5</title>
 
-
-const scoreElement = document.getElementById("score");
-
-<meta name="viewport"content= "width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no, target-densitydpi=device-dpi"/>
-const scoreElement = document.getElementById("score");
-
 <meta name="viewport" content="user-scalable=no, initial-scale=0.5, maximum-scale=1, user-scalable=0" />
 
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+
 
 
 </head>
@@ -53,6 +49,83 @@ var curTime;
 var isGameOver;
 var lineSpan;
 var curLines; 
+var touchX;
+var touchY;
+var touchId;
+
+window.onload = onReady;
+
+document.body.addEventListener('touchstart', function(e)
+{
+	e.preventDefault();
+	
+	touchX = e.touches[0].pageX;
+	touchY = e.touches[0].pageY;
+	touchId = e.touches[0].identifier;
+	
+} );
+
+document.body.addEventListener('touchmove', function(e)
+{
+	e.preventDefault();
+	
+	var difY = e.touches[0].pageY - touchY;
+	
+	if(difY > 60)
+	{
+		if( checkMove(curPiece.gridx, curPiece.gridy + 1, curPiece.curState) )
+			curPiece.gridy++;
+	}
+	
+} );
+
+document.body.addEventListener('touchend', function(e) 
+{
+	e.preventDefault();
+	var touchEndX;
+	var touchEndY;
+	
+	var touch = e.changedTouches.item(0);
+	
+	try
+	{
+		touchEndX = touch.pageX;
+		touchEndY = touch.pageY;
+	}
+	catch(err)
+	{
+		alert(err);
+		return;
+	}
+	
+	var difX = Math.abs(touchEndX - touchX);
+	var difY = Math.abs(touchEndY - touchY);
+	
+	if(difX < 10 && difY < 10)
+	{
+		var newState = curPiece.curState - 1;
+		if(newState < 0)
+			newState = curPiece.states.length - 1;
+			
+		if( checkMove(curPiece.gridx, curPiece.gridy, newState) )
+			curPiece.curState = newState;
+	}
+	else
+	if(difX > difY)
+	{
+		if(touchEndX < touchX)
+		{
+			if( checkMove(curPiece.gridx - 1, curPiece.gridy, curPiece.curState) )
+				curPiece.gridx--;
+		}	
+		else
+		{
+			if( checkMove(curPiece.gridx + 1, curPiece.gridy, curPiece.curState) )
+				curPiece.gridx++;
+		}
+	}
+	
+}); 
 
 
 
